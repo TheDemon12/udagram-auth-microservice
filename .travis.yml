@@ -15,10 +15,21 @@ before_script:
 
 script:
   - docker --version # print the version for logging
-  - docker build -t udagram-auth-microservice .
-  - docker tag udagram-auth-microservice thedemon12/udagram-auth-microservice:latest
+
+  - docker build -t udagram-auth-microservice 
+  --build-arg POSTGRESS_USERNAME "$POSTGRESS_USERNAME"
+  --build-arg POSTGRESS_PASSWORD "$POSTGRESS_PASSWORD" 
+  --build-arg POSTGRESS_DATABASE "$POSTGRESS_DATABASE" 
+  --build-arg POSTGRESS_HOST "$POSTGRESS_HOST"  
+  --build-arg AWS_REGION "$AWS_REGION" 
+  --build-arg AWS_PROFILE "$AWS_PROFILE" 
+  --build-arg AWS_MEDIA_BUCKET "$AWS_MEDIA_BUCKET" 
+  --build-arg JWT_SECRET "$JWT_SECRET" .
+  
+  - docker tag udagram-auth-microservice thsedemon12/udagram-auth-microservice:latest
 
 # Tasks to perform after the process is successful. Formatting the Docker username and password as below enables you to programmatically log in without having the password exposed in logs.
 after_success:
+  - echo "$POSTGRESS_USERNAME"
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker push thedemon12/udagram-auth-microservice
